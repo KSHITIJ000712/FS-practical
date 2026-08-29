@@ -1,0 +1,13 @@
+{
+  "name": "exp1-fsd",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:edge": "vite --open"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  }
+}
