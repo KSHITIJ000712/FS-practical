@@ -1,5 +1,4 @@
 
-
 name: FS Practical CI
 
 on:
@@ -23,16 +22,17 @@ jobs:
           node-version: 22
 
       - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install
+        run: npm ci
 
       - name: Build frontend
-        working-directory: frontend
         run: npm run build
 
   backend-check:
     name: Check Backend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,10 +43,7 @@ jobs:
           node-version: 22
 
       - name: Install backend dependencies
-        working-directory: backend
-        run: npm install
+        run: npm ci
 
-      - name: Verify backend JavaScript
-        working-directory: backend
+      - name: Check backend JavaScript
         run: node --check server.js
-
