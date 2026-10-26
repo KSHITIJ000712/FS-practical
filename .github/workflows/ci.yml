@@ -3,15 +3,20 @@ name: FS Practical CI
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
   frontend-build:
     name: Build Frontend
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,9 +25,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build frontend
         run: npm run build
@@ -30,9 +37,11 @@ jobs:
   backend-check:
     name: Check Backend
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,9 +50,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install backend dependencies
-        run: npm ci
+        run: npm install
 
       - name: Check backend JavaScript
         run: node --check server.js
