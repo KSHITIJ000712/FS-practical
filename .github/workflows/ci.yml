@@ -3,17 +3,13 @@ name: FS Practical CI
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main]
   pull_request:
-    branches:
-      - main
-      - master
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  frontend-build:
+  frontend-check:
     name: Build Frontend
     runs-on: ubuntu-latest
 
@@ -25,9 +21,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install frontend dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build frontend
         run: npm run build
@@ -48,9 +45,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install backend dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Check backend JavaScript
+      - name: Verify backend JavaScript
         run: node --check server.js

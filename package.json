@@ -1,13 +1,19 @@
 {
-  "name": "exp1-fsd",
+  "name": "fsdexp4",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:edge": "vite --open"
+    "dev:edge": "vite --open",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.4"
   },
   "devDependencies": {
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "oxlint": "^1.0.0"
   }
 }
