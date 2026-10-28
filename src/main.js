@@ -80,6 +80,130 @@ let activeCategory = "All";
 
 const app = document.querySelector("#app");
 
+function renderAuth(mode = "login", message = "") {
+  const isRegister = mode === "register";
+
+  const app = document.querySelector("#app");
+
+  app.innerHTML = `
+    <div class="auth-page">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <div class="auth-logo">GZ</div>
+          <h1>GAMEZONE</h1>
+          <p>LEVEL UP YOUR GAME</p>
+        </div>
+
+        <h2>${isRegister ? "Create account" : "Welcome back"}</h2>
+        <p class="auth-subtitle">
+          ${isRegister
+            ? "Join GameZone and level up your setup."
+            : "Sign in to continue your gaming journey."}
+        </p>
+
+        <div id="auth-message" class="auth-message"
+             role="alert">${message}</div>
+
+        <form id="auth-form">
+          ${isRegister ? `
+            <label for="auth-name">Full name</label>
+            <input id="auth-name" name="name"
+                   type="text" placeholder="Your name"
+                   required>
+          ` : ""}
+
+          <label for="auth-email">Email address</label>
+          <input id="auth-email" name="email"
+                 type="email" placeholder="you@example.com"
+                 required>
+
+          <label for="auth-password">Password</label>
+          <input id="auth-password" name="password"
+                 type="password" minlength="6"
+                 placeholder="Enter your password" required>
+
+          <button class="auth-submit" type="submit">
+            ${isRegister ? "CREATE ACCOUNT ↗" : "SIGN IN ↗"}
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          ${isRegister ? "Already have an account?" : "New to GameZone?"}
+          <button id="auth-switch" type="button">
+            ${isRegister ? "Sign in" : "Create account"}
+          </button>
+        </p>
+      </div>
+    </div>
+  `;
+
+  const form = document.querySelector("#auth-form");
+  const messageBox = document.querySelector("#auth-message");
+
+  if (!message) {
+    messageBox.hidden = true;
+  }
+
+  document.querySelector("#auth-switch").addEventListener("click", () => {
+    renderAuth(isRegister ? "login" : "register");
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = "PLEASE WAIT...";
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/users/${isRegister ? "register" : "login"}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message ||
+          result.errors?.map(error => error.msg).join(", ") ||
+          "Authentication failed."
+        );
+      }
+
+      if (isRegister) {
+        renderAuth("login", "Account created. Please sign in.");
+        return;
+      }
+
+      if (!result.token) {
+        throw new Error("Login succeeded but no token was returned.");
+      }
+
+      sessionStorage.setItem("gamezone-token", result.token);
+      renderApp();
+      showToast("Welcome to GameZone!");
+    } catch (error) {
+      messageBox.hidden = false;
+      messageBox.textContent = error.message.includes("fetch")
+        ? "Cannot reach the backend. Check that the server is running on port 5000."
+        : error.message;
+
+      submitButton.disabled = false;
+      submitButton.textContent = isRegister
+        ? "CREATE ACCOUNT ↗"
+        : "SIGN IN ↗";
+    }
+  });
+}
+
+
 function money(amount) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
@@ -833,4 +957,4 @@ window.filterBrand = (brand) => {
   }, 50);
 };
 
-renderApp();
+renderAuth("login");
