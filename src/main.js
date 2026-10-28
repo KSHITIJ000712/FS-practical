@@ -159,7 +159,7 @@ function renderAuth(mode = "login", message = "") {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/${isRegister ? "register" : "login"}`,
+       `https://fs-practical.onrender.com/api/users/${isRegister ? "register" : "login"}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
